@@ -1,11 +1,11 @@
 /* eslint-disable */
-import { MDXRemote } from 'next-mdx-remote/rsc';
-import React, { FC } from 'react';
-import remarkGfm from 'remark-gfm';
-import CodeBlock from '../CodeBlock';
+import { MDXRemote } from 'next-mdx-remote/rsc'
+import React, { FC } from 'react'
+import remarkGfm from 'remark-gfm'
+import CodeBlock from '../CodeBlock'
 
 export interface MarkdownProps {
-  content: string;
+  content: string
 }
 
 export const Markdown: FC<MarkdownProps> = ({ content }) => {
@@ -19,33 +19,33 @@ export const Markdown: FC<MarkdownProps> = ({ content }) => {
     p: (props: any) => <p className="mb-1 leading-relaxed" {...props} />,
     code: (props: any) => <code className="text-sm px-1 rounded-sm bg-orange-100 text-orange-800" {...props} />,
     pre: ({ children, ...props }: any) => {
-      const codeElement = React.Children.toArray(children)[0] as React.ReactElement;
+      const codeElement = React.Children.toArray(children)[0] as React.ReactElement
       if (codeElement && codeElement.props) {
-        const { children: code, className } = codeElement.props as any;
-        const language = className?.replace('language-', '') || 'tsx';
+        const { children: code, className } = codeElement.props as any
+        const language = className?.replace('language-', '') || 'tsx'
 
-        return <CodeBlock language={language} value={String(code).trim()} />;
+        return <CodeBlock language={language} value={String(code).trim()} />
       }
 
-      return <pre {...props}>{children}</pre>;
+      return <pre {...props}>{children}</pre>
     },
     ul: (props: any) => <ul className="mb-3" {...props} />,
     li: ({ children, ...props }: any) => {
-      const firstEl = React.Children.toArray(children)[0];
+      const firstEl = React.Children.toArray(children)[0]
 
       if (typeof firstEl === 'string' && firstEl.startsWith('-')) {
         return (
           <li className="pl-3 pb-1 last-of-type:pb-0">
             - {firstEl.substring(1)} {React.Children.toArray(children).slice(1)}
           </li>
-        );
+        )
       }
 
       return (
         <li className="pb-1 last-of-type:pb-0" {...props}>
           {children}
         </li>
-      );
+      )
     },
     table: ({ children }: any) => {
       return (
@@ -76,9 +76,9 @@ export const Markdown: FC<MarkdownProps> = ({ content }) => {
             </tbody>
           </table>
         </div>
-      );
+      )
     }
-  };
+  }
 
   return (
     <MDXRemote
@@ -90,5 +90,5 @@ export const Markdown: FC<MarkdownProps> = ({ content }) => {
       }}
       components={components}
     />
-  );
-};
+  )
+}

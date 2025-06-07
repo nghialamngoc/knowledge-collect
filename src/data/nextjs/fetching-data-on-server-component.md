@@ -2,13 +2,24 @@
 title: 'Fetching Data trong Server Components'
 author: 'Tanjiro.Lam'
 date: '2024-05-24'
-tags: ['nextjs  ']
+tags: ['nextjs']
+onThisPage:
+  [
+    { title: '1. Sử dụng fetch API' },
+    { title: '2. Sử dụng ORM hoặc Database' },
+    { title: '3. Streaming trong Server Components' },
+    { title: '4. Các Pattern Fetching Data' },
+    { title: '5. So sánh các Phương pháp' },
+    { title: '6. Best Practices' },
+    { title: '7. Kết luận' }
+  ]
 ---
 
 # Fetching Data trong Server Components
 
 Server Components là một tính năng cốt lõi trong React, được tích hợp chặt chẽ trong Next.js App Router, cho phép fetching data trực tiếp trên server, giảm tải cho client, cải thiện hiệu suất và SEO. Bài viết này giải thích chi tiết cách fetching data sử dụng **fetch API**, **ORM hoặc database**, cơ chế **streaming**, và các pattern **sequential**, **parallel**, và **preload**.
 
+<div id="1-su-dung-fetch-api">
 ## 1. Sử dụng fetch API
 
 `fetch` API là phương pháp tích hợp sẵn trong JavaScript, được Next.js mở rộng để hỗ trợ caching và revalidation, rất phù hợp để lấy dữ liệu từ các API bên ngoài hoặc nội bộ trong Server Components.
@@ -18,18 +29,18 @@ Server Components là một tính năng cốt lõi trong React, được tích h
 async function Page() {
   const res = await fetch('https://api.example.com/data', {
     cache: 'force-cache' // Cache dữ liệu tĩnh
-  });
-  const data = await res.json();
+  })
+  const data = await res.json()
 
   return (
     <div>
       <h1>Data từ API</h1>
       <pre>{JSON.stringify(data, null, 2)}</pre>
     </div>
-  );
+  )
 }
 
-export default Page;
+export default Page
 ```
 
 ### 1.1. Cách hoạt động
@@ -49,18 +60,18 @@ Server Components hỗ trợ `async/await`, cho phép gọi `fetch` trực tiế
 async function Page() {
   const res = await fetch('https://api.example.com/news', {
     next: { revalidate: 3600 } // Revalidate sau 1 giờ
-  });
-  const data = await res.json();
+  })
+  const data = await res.json()
 
   return (
     <div>
       <h1>Tin tức</h1>
       <pre>{JSON.stringify(data, null, 2)}</pre>
     </div>
-  );
+  )
 }
 
-export default Page;
+export default Page
 ```
 
 ### 1.3. Ưu điểm và Lưu ý
@@ -79,18 +90,21 @@ async function Page() {
     const res = await fetch('https://api.example.com/protected-data', {
       headers: { Authorization: `Bearer ${process.env.API_TOKEN}` },
       cache: 'no-store'
-    });
-    if (!res.ok) throw new Error('Failed to fetch');
-    const data = await res.json();
-    return <div>{JSON.stringify(data)}</div>;
+    })
+    if (!res.ok) throw new Error('Failed to fetch')
+    const data = await res.json()
+    return <div>{JSON.stringify(data)}</div>
   } catch (error) {
-    return <div>Error: {error.message}</div>;
+    return <div>Error: {error.message}</div>
   }
 }
 
-export default Page;
+export default Page
 ```
 
+</div>
+
+<div id="2-su-dung-orm-hoac-database">
 ## 2. Sử dụng ORM hoặc Database
 
 Server Components cho phép truy cập trực tiếp vào database (như PostgreSQL, MongoDB) hoặc thông qua các ORM (như Prisma, Drizzle) mà không cần API trung gian, giúp giảm độ trễ và đơn giản hóa kiến trúc ứng dụng.
@@ -101,12 +115,12 @@ Vì Server Components chạy trên server, chúng có thể thực hiện truy v
 
 ```jsx
 // app/page.js
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client'
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 
 async function Page() {
-  const users = await prisma.user.findMany();
+  const users = await prisma.user.findMany()
 
   return (
     <div>
@@ -117,10 +131,10 @@ async function Page() {
         ))}
       </ul>
     </div>
-  );
+  )
 }
 
-export default Page;
+export default Page
 ```
 
 ### 2.2. Ưu điểm và Lưu ý
@@ -130,11 +144,15 @@ export default Page;
   - Đơn giản hóa kiến trúc bằng cách không cần tạo API endpoint.
   - Type-safety với các ORM như Prisma, giúp giảm lỗi lập trình.
 - **Lưu ý**:
+
   - Chỉ sử dụng trong Server Components, vì Client Components không thể truy cập database.
   - Quản lý kết nối database bằng connection pooling để tránh quá tải.
   - Ngăn chặn SQL injection bằng ORM hoặc parameterized queries.
   - Tối ưu hóa truy vấn bằng cách sử dụng phân trang hoặc giới hạn bản ghi để tránh lấy dữ liệu không cần thiết.
 
+</div>
+
+<div id="3-streaming-trong-server-components">
 ## 3. Streaming trong Server Components
 
 Streaming là cơ chế cho phép Server Components gửi dữ liệu từng phần đến client thay vì đợi toàn bộ dữ liệu được xử lý, cải thiện trải nghiệm người dùng bằng cách hiển thị giao diện sớm hơn.
@@ -145,14 +163,14 @@ Streaming sử dụng React `<Suspense>` để hiển thị giao diện tạm th
 
 ```jsx
 // app/page.js
-import { Suspense } from 'react';
+import { Suspense } from 'react'
 
 async function DataComponent() {
   const res = await fetch('https://api.example.com/slow-data', {
     cache: 'no-store'
-  });
-  const data = await res.json();
-  return <div>{JSON.stringify(data)}</div>;
+  })
+  const data = await res.json()
+  return <div>{JSON.stringify(data)}</div>
 }
 
 function Page() {
@@ -163,10 +181,10 @@ function Page() {
         <DataComponent />
       </Suspense>
     </div>
-  );
+  )
 }
 
-export default Page;
+export default Page
 ```
 
 ### 3.2. Ưu điểm và Lưu ý
@@ -178,6 +196,9 @@ export default Page;
   - Cần cấu trúc component cẩn thận để tận dụng Suspense hiệu quả.
   - Fallback UI nên đơn giản để tránh làm nặng client.
 
+</div>
+
+<div id="4-cac-pattern-fetching-data">
 ## 4. Các Pattern Fetching Data
 
 ### 4.1. Sequential Data Fetching
@@ -187,10 +208,10 @@ Sequential fetching thực hiện các request dữ liệu theo thứ tự tuầ
 ```jsx
 // app/page.js
 async function Page() {
-  const res1 = await fetch('https://api.example.com/data1');
-  const data1 = await res1.json();
-  const res2 = await fetch('https://api.example.com/data2');
-  const data2 = await res2.json();
+  const res1 = await fetch('https://api.example.com/data1')
+  const data1 = await res1.json()
+  const res2 = await fetch('https://api.example.com/data2')
+  const data2 = await res2.json()
 
   return (
     <div>
@@ -198,10 +219,10 @@ async function Page() {
       <div>Data 1: {JSON.stringify(data1)}</div>
       <div>Data 2: {JSON.stringify(data2)}</div>
     </div>
-  );
+  )
 }
 
-export default Page;
+export default Page
 ```
 
 ### 4.2. Parallel Data Fetching
@@ -214,9 +235,9 @@ async function Page() {
   const [res1, res2] = await Promise.all([
     fetch('https://api.example.com/data1'),
     fetch('https://api.example.com/data2')
-  ]);
-  const data1 = await res1.json();
-  const data2 = await res2.json();
+  ])
+  const data1 = await res1.json()
+  const data2 = await res2.json()
 
   return (
     <div>
@@ -224,10 +245,10 @@ async function Page() {
       <div>Data 1: {JSON.stringify(data1)}</div>
       <div>Data 2: {JSON.stringify(data2)}</div>
     </div>
-  );
+  )
 }
 
-export default Page;
+export default Page
 ```
 
 ### 4.3. Preload Pattern
@@ -237,13 +258,13 @@ Preload pattern cho phép bắt đầu fetching dữ liệu sớm, trước khi 
 ```jsx
 // app/page.js
 function preloadData() {
-  return Promise.all([fetch('https://api.example.com/data1'), fetch('https://api.example.com/data2')]);
+  return Promise.all([fetch('https://api.example.com/data1'), fetch('https://api.example.com/data2')])
 }
 
 async function Page() {
-  const [res1, res2] = await preloadData();
-  const data1 = await res1.json();
-  const data2 = await res2.json();
+  const [res1, res2] = await preloadData()
+  const data1 = await res1.json()
+  const data2 = await res2.json()
 
   return (
     <div>
@@ -251,11 +272,15 @@ async function Page() {
       <div>Data 1: {JSON.stringify(data1)}</div>
       <div>Data 2: {JSON.stringify(data2)}</div>
     </div>
-  );
+  )
 }
 
-export default Page;
+export default Page
 ```
+
+</div>
+
+<div id="5-so-sanh-cac-phuong-phap">
 
 ## 5. So sánh các Phương pháp
 
@@ -268,6 +293,9 @@ export default Page;
 | **Parallel**     | Nhanh hơn, giảm thời gian tải           | Phức tạp hơn sequential                     |
 | **Preload**      | Tối ưu thời gian chờ, tái sử dụng tốt   | Cần quản lý logic preload riêng             |
 
+</div>
+
+<div id="6-best-practices">
 ## 6. Best Practices
 
 1. **Chọn phương pháp phù hợp**:
@@ -291,6 +319,11 @@ export default Page;
    - Lưu API keys trong biến môi trường (`process.env`) khi sử dụng `fetch`.
    - Sử dụng ORM hoặc parameterized queries để ngăn chặn SQL injection.
 
+</div>
+
+<div id="7-ket-luan">
 ## 7. Kết luận
 
 Fetching data trong Server Components với `fetch API` và ORM/database cung cấp các phương pháp mạnh mẽ để xây dựng ứng dụng hiệu quả. Streaming cải thiện trải nghiệm người dùng bằng cách hiển thị giao diện sớm hơn, trong khi các pattern như sequential, parallel, và preload giúp tối ưu hóa hiệu suất fetching. Bằng cách áp dụng các phương pháp này và tuân theo best practices, bạn có thể tạo ra các ứng dụng Next.js nhanh, đáng tin cậy và dễ bảo trì.
+
+</div>

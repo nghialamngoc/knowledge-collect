@@ -1,25 +1,25 @@
-'use client';
+'use client'
 
-import { useState } from 'react';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { prism } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { Copy } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
+import { useState } from 'react'
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
+import { prism } from 'react-syntax-highlighter/dist/esm/styles/prism'
+import { Copy } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
 
 interface CodeBlockProps {
-  language?: string;
-  value: string;
+  language?: string
+  value: string
 }
 
 export const CodeBlock = ({ language = 'tsx', value }: CodeBlockProps) => {
-  const [copied, setCopied] = useState(false);
+  const [copied, setCopied] = useState(false)
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(value);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+    navigator.clipboard.writeText(value)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
 
   return (
     <div className="relative my-4 rounded-md border text-sm">
@@ -45,5 +45,5 @@ export const CodeBlock = ({ language = 'tsx', value }: CodeBlockProps) => {
         {value}
       </SyntaxHighlighter>
     </div>
-  );
-};
+  )
+}
