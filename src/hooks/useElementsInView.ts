@@ -41,7 +41,7 @@ const useElementsInView = (ids: string[], options = {}) => {
     return () => {
       observer.disconnect()
     }
-  }, [ids])
+  }, [ids, options])
 
   return {
     visibleElements: Array.from(visibleElements),

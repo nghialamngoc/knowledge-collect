@@ -24,10 +24,22 @@ export const Markdown: FC<MarkdownProps> = ({ content }) => {
         const { children: code, className } = codeElement.props as any
         const language = className?.replace('language-', '') || 'tsx'
 
-        return <CodeBlock language={language} value={String(code).trim()} />
+        return (
+          <div className="w-full overflow-x-auto mb-4 sm:rounded-lg">
+            <div className="min-w-0">
+              <CodeBlock language={language} value={String(code).trim()} />
+            </div>
+          </div>
+        )
       }
 
-      return <pre {...props}>{children}</pre>
+      return (
+        <div className="w-full overflow-x-auto mb-4 sm:rounded-lg">
+          <pre className="min-w-0 bg-gray-100 text-sm font-mono whitespace-pre" {...props}>
+            {children}
+          </pre>
+        </div>
+      )
     },
     ul: (props: any) => <ul className="mb-3" {...props} />,
     li: ({ children, ...props }: any) => {
@@ -49,32 +61,40 @@ export const Markdown: FC<MarkdownProps> = ({ content }) => {
     },
     table: ({ children }: any) => {
       return (
-        <div className="overflow-x-auto mb-3">
-          <table className="w-full text-sm text-left text-gray-700 border-collapse shadow-md border border-gray-200">
-            <thead className="bg-blue-100 text-blue-800">
-              <tr>
-                {children?.[0]?.props?.children?.props?.children?.map((th: any, index: number) => (
-                  <th key={index} className="px-4 py-2 sm:px-6 sm:py-3 font-semibold border-r border-gray-200">
-                    {th.props.children}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {children.slice(1)?.[0]?.props?.children?.map((row: any, rowIndex: number) => (
-                <tr
-                  key={rowIndex}
-                  className="border-b border-gray-200 hover:bg-gray-50 even:bg-white odd:bg-gray-50 transition-colors"
-                >
-                  {row.props.children.map((cell: any, cellIndex: number) => (
-                    <td key={cellIndex} className="px-4 py-2 sm:px-6 sm:py-3 border-r border-gray-200">
-                      {cell.props.children}
-                    </td>
+        <div className="overflow-x-auto mb-3 -mx-6 sm:mx-0">
+          <div className="min-w-0 px-6 sm:px-0">
+            <table className="w-full text-sm text-left text-gray-700 border-collapse shadow-md border border-gray-200">
+              <thead className="bg-blue-100 text-blue-800">
+                <tr>
+                  {children?.[0]?.props?.children?.props?.children?.map((th: any, index: number) => (
+                    <th
+                      key={index}
+                      className="px-4 py-2 sm:px-6 sm:py-3 font-semibold border-r border-gray-200 whitespace-nowrap"
+                    >
+                      {th.props.children}
+                    </th>
                   ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {children.slice(1)?.[0]?.props?.children?.map((row: any, rowIndex: number) => (
+                  <tr
+                    key={rowIndex}
+                    className="border-b border-gray-200 hover:bg-gray-50 even:bg-white odd:bg-gray-50 transition-colors"
+                  >
+                    {row.props.children.map((cell: any, cellIndex: number) => (
+                      <td
+                        key={cellIndex}
+                        className="px-4 py-2 sm:px-6 sm:py-3 border-r border-gray-200 whitespace-nowrap"
+                      >
+                        {cell.props.children}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )
     }

@@ -1,6 +1,7 @@
 import { Geist_Mono, Open_Sans } from 'next/font/google'
 import './globals.css'
 import WebVitals from './web-vitals'
+import { ModalProvider } from '@/context/ModalContext'
 
 const openSans = Open_Sans({
   variable: '--font-open-sans',
@@ -24,7 +25,7 @@ export default async function RootLayout({
     <html lang={locale}>
       <body className={`${openSans.variable} ${geistMono.variable} antialiased`}>
         <WebVitals />
-        {children}
+        <ModalProvider>{children}</ModalProvider>
       </body>
     </html>
   )

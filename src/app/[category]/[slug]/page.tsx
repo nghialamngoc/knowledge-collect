@@ -57,15 +57,16 @@ export default async function Page({ params }: PageProps) {
 
         <div className="lg:px-4 xl:px-12 py-6 flex justify-center">
           <div className="hidden xl:block w-40 shrink-0">123</div>
-          <div className="lg:max-w-3xl xl:max-w-4xl px-6">
-            <article>
+
+          {/* Main content với proper responsive container */}
+          <div className="w-full lg:max-w-3xl xl:max-w-4xl min-w-0">
+            <article className="px-6 lg:px-0">
               <Markdown content={content} />
             </article>
-            {/*
-            <ClientComponent /> */}
           </div>
+
           <div className="hidden lg:block w-55 shrink-0 sticky h-fit top-10">
-            <OnThisPageSection data={onThisPage} />
+            {onThisPage && <OnThisPageSection data={onThisPage} />}
           </div>
         </div>
       </section>
